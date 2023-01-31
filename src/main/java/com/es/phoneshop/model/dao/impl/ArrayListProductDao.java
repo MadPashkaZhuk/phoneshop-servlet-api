@@ -6,12 +6,11 @@ import com.es.phoneshop.model.entity.sortParams.SortOrder;
 import com.es.phoneshop.model.exceptions.ProductNotFoundException;
 import com.es.phoneshop.model.entity.product.Product;
 
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class ArrayListProductDao implements ProductDao {
-    private static ProductDao instance;
+    private static volatile ProductDao instance;
 
     public static synchronized ProductDao getInstance() {
         if(instance == null) {
@@ -45,7 +44,7 @@ public class ArrayListProductDao implements ProductDao {
     public List<Product> findProducts(String query, SortField sortField, SortOrder sortOrder) {
         synchronized (lock) {
             Comparator<Product> comparator = Comparator.comparing(product -> {
-                if (sortField != null && SortField.description == sortField) {
+                if (sortField != null && SortField.DESCRIPTION == sortField) {
                     return (Comparable) product.getDescription();
                 }
                 else {
@@ -60,7 +59,7 @@ public class ArrayListProductDao implements ProductDao {
                     .filter(product -> product.getPrice() != null)
                     .filter(product -> product.getStock() > 0)
                     // if sortOrder == null -> using stable sort(same order), else -> sort with condition
-                    .sorted(sortOrder == null ? ((a,b) -> 0 ) : (sortOrder == SortOrder.asc ? comparator : comparator.reversed()))
+                    .sorted(sortOrder == null ? ((a,b) -> 0 ) : (sortOrder == SortOrder.ASC ? comparator : comparator.reversed()))
                     .collect(Collectors.toList());
         }
     }

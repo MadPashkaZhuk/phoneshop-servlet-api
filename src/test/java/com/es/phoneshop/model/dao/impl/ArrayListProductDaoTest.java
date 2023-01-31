@@ -24,13 +24,13 @@ public class ArrayListProductDaoTest
 
     @Test
     public void testFindProductsNoResults() {
-        assertFalse(productDao.findProducts("", SortField.description, SortOrder.asc).isEmpty());
+        assertFalse(productDao.findProducts("", SortField.DESCRIPTION, SortOrder.ASC).isEmpty());
     }
 
     @Test
     public void testFindProductsWithCondition() {
-        assertNotEquals(productDao.getAmountOfProducts(), productDao.findProducts("", SortField.description, SortOrder.asc).size());
-        assertEquals(productDao.getAmountOfProducts(), productDao.findProducts("", SortField.description, SortOrder.asc).size() + 1);
+        assertNotEquals(productDao.getAmountOfProducts(), productDao.findProducts("", SortField.DESCRIPTION, SortOrder.ASC).size());
+        assertEquals(productDao.getAmountOfProducts(), productDao.findProducts("", SortField.DESCRIPTION, SortOrder.ASC).size() + 1);
     }
     @Test
     public void testSaveNewProduct() throws ProductNotFoundException {

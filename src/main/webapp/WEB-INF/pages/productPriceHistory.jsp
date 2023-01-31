@@ -7,8 +7,8 @@
 <tags:master pageTitle="Product Price History">
   <h1>${product.description} price history</h1>
 
-  <c:forEach items="${product.priceHistoryMap}" var="entry">
-    Date: <c:out value="${entry.key}"/>  Price: <c:out value="${entry.value}"/> <br />
-  </c:forEach>
+  <c:forEach var="priceHistory" items="${product.priceHistoryList}">
+    Date: <c:out value="${priceHistory.date}"/>  Price: <c:out value="${priceHistory.price}}"/> <br />
 
+  </c:forEach>
 </tags:master>
