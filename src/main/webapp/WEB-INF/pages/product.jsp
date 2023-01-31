@@ -13,7 +13,7 @@
         <tr>
             <td>Image</td>
             <td>
-                <img src="https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/${product.imageUrl}">
+                <img src="${product.imageUrl}">
             </td>
 
         </tr>
