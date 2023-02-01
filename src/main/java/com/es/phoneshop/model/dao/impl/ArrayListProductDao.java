@@ -12,14 +12,15 @@ import java.util.stream.Collectors;
 public class ArrayListProductDao implements ProductDao {
     private static volatile ProductDao instance;
 
-    public static synchronized ProductDao getInstance() {
-        if(instance == null) {
-            instance = new ArrayListProductDao();
-        }
-        return instance;
+    private static class SingletonHelper {
+        private static final ArrayListProductDao INSTANCE = new ArrayListProductDao();
     }
 
+    public static ProductDao getInstance() {
+        return SingletonHelper.INSTANCE;
+    }
     private List<Product> products;
+
     private long currId;
     private final Object lock = new Object();
 
