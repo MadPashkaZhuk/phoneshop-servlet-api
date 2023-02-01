@@ -2,7 +2,7 @@ package com.es.phoneshop.web;
 
 import com.es.phoneshop.model.dao.impl.ArrayListProductDao;
 import com.es.phoneshop.model.dao.ProductDao;
-import com.es.phoneshop.model.entity.cart.DefaultLatestProductQueueService;
+import com.es.phoneshop.model.entity.latestProductQueue.DefaultLatestProductQueueService;
 import com.es.phoneshop.model.entity.latestProductQueue.LatestProductQueueService;
 import com.es.phoneshop.model.entity.sortParams.SortField;
 import com.es.phoneshop.model.entity.sortParams.SortOrder;

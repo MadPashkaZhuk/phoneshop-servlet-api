@@ -5,7 +5,8 @@ import com.es.phoneshop.model.dao.ProductDao;
 import com.es.phoneshop.model.entity.cart.Cart;
 import com.es.phoneshop.model.entity.cart.CartService;
 import com.es.phoneshop.model.entity.cart.DefaultCartService;
-import com.es.phoneshop.model.entity.cart.DefaultLatestProductQueueService;
+
+import com.es.phoneshop.model.entity.latestProductQueue.DefaultLatestProductQueueService;
 import com.es.phoneshop.model.entity.latestProductQueue.LatestProductQueue;
 import com.es.phoneshop.model.entity.latestProductQueue.LatestProductQueueService;
 import com.es.phoneshop.model.exceptions.OutOfStockException;

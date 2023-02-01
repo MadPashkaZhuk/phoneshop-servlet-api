@@ -1,9 +1,7 @@
-package com.es.phoneshop.model.entity.cart;
+package com.es.phoneshop.model.entity.latestProductQueue;
 
 import com.es.phoneshop.model.dao.ProductDao;
 import com.es.phoneshop.model.dao.impl.ArrayListProductDao;
-import com.es.phoneshop.model.entity.latestProductQueue.LatestProductQueue;
-import com.es.phoneshop.model.entity.latestProductQueue.LatestProductQueueService;
 import com.es.phoneshop.model.entity.product.Product;
 
 import javax.servlet.http.HttpServletRequest;
