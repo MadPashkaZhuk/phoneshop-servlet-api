@@ -2,6 +2,8 @@ package com.es.phoneshop.web;
 
 import com.es.phoneshop.model.dao.impl.ArrayListProductDao;
 import com.es.phoneshop.model.dao.ProductDao;
+import com.es.phoneshop.model.entity.cart.DefaultLatestProductQueueService;
+import com.es.phoneshop.model.entity.latestProductQueue.LatestProductQueueService;
 import com.es.phoneshop.model.entity.sortParams.SortField;
 import com.es.phoneshop.model.entity.sortParams.SortOrder;
 
@@ -16,11 +18,12 @@ import java.util.Optional;
 
 public class ProductListPageServlet extends HttpServlet {
     private ProductDao productDao;
-
+    private LatestProductQueueService queueService;
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         productDao = ArrayListProductDao.getInstance();
+        queueService = DefaultLatestProductQueueService.getInstance();
     }
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -30,6 +33,9 @@ public class ProductListPageServlet extends HttpServlet {
         request.setAttribute("products", productDao.findProducts(query,
                 Optional.ofNullable(sortField).map(field -> SortField.valueOf(field.toUpperCase())).orElse(null),
                 Optional.ofNullable(sortOrder).map(order -> SortOrder.valueOf(order.toUpperCase())).orElse(null)));
+
+        request.setAttribute("latestProducts", queueService.getLatestProductQueue(request).getQueue());
+
         request.getRequestDispatcher("/WEB-INF/pages/productList.jsp").forward(request, response);
     }
 }

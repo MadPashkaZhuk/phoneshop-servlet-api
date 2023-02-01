@@ -1,6 +1,7 @@
 package com.es.phoneshop.model.dao.impl;
 
 import com.es.phoneshop.model.dao.ProductDao;
+import com.es.phoneshop.model.entity.latestProductQueue.LatestProductQueue;
 import com.es.phoneshop.model.entity.sortParams.SortField;
 import com.es.phoneshop.model.entity.sortParams.SortOrder;
 import com.es.phoneshop.model.exceptions.ProductNotFoundException;
@@ -20,12 +21,17 @@ public class ArrayListProductDao implements ProductDao {
         return SingletonHelper.INSTANCE;
     }
     private List<Product> products;
-
+    private LatestProductQueue latestProducts;
     private long currId;
     private final Object lock = new Object();
 
     private ArrayListProductDao() {
         this.products = new ArrayList<>();
+        this.latestProducts = new LatestProductQueue();
+    }
+
+    public LatestProductQueue getLatestProducts() {
+        return latestProducts;
     }
 
     @Override

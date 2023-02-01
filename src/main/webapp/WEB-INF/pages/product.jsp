@@ -4,6 +4,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <jsp:useBean id="product" type="com.es.phoneshop.model.entity.product.Product" scope="request"/>
+<jsp:useBean id="latestProducts" scope="request" type="java.util.ArrayDeque"/>
 <tags:master pageTitle="Product Page">
     <p>
         Cart: ${cart}
@@ -69,4 +70,28 @@
             <button>Add to Cart</button>
         </p>
     </form>
+
+    <c:if test="${not empty latestProducts}">
+        <p>Latest items: </p>
+        <table>
+            <c:forEach var="product" items="${latestProducts}">
+                <tr>
+                    <td>
+                        <img class="product-tile" src="${product.imageUrl}">
+                    </td>
+                    <td>
+                        <a href="${pageContext.servletContext.contextPath}/products/${product.id}">
+                                ${product.description}
+                        </a>
+                    </td>
+                    <td class="price">
+                        <a href="${pageContext.servletContext.contextPath}/products/pricehistory/${product.id}">
+                            <fmt:formatNumber value="${product.price}" type="currency" currencySymbol="${product.currency.symbol}"/>
+                        </a>
+                    </td>
+                </tr>
+            </c:forEach>
+        </table>
+    </c:if>
+
 </tags:master>

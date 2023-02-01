@@ -5,8 +5,9 @@ import com.es.phoneshop.model.dao.ProductDao;
 import com.es.phoneshop.model.entity.cart.Cart;
 import com.es.phoneshop.model.entity.cart.CartService;
 import com.es.phoneshop.model.entity.cart.DefaultCartService;
-import com.es.phoneshop.model.entity.sortParams.SortField;
-import com.es.phoneshop.model.entity.sortParams.SortOrder;
+import com.es.phoneshop.model.entity.cart.DefaultLatestProductQueueService;
+import com.es.phoneshop.model.entity.latestProductQueue.LatestProductQueue;
+import com.es.phoneshop.model.entity.latestProductQueue.LatestProductQueueService;
 import com.es.phoneshop.model.exceptions.OutOfStockException;
 
 import javax.servlet.ServletConfig;
@@ -17,23 +18,28 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.util.Optional;
 
 
 public class ProductDetailsPageServlet extends HttpServlet {
     private ProductDao productDao;
     private CartService cartService;
+    private LatestProductQueueService queueService;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         productDao = ArrayListProductDao.getInstance();
         cartService = DefaultCartService.getInstance();
+        queueService = DefaultLatestProductQueueService.getInstance();
     }
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setAttribute("product", productDao.getProduct(parseProductId(request)));
         request.setAttribute("cart", cartService.getCart(request));
+        request.setAttribute("latestProducts", queueService.getLatestProductQueue(request).getQueue());
+
+        LatestProductQueue queue = queueService.getLatestProductQueue(request);
+        queueService.add(queue, parseProductId(request));
         request.getRequestDispatcher("/WEB-INF/pages/product.jsp").forward(request, response);
     }
 
