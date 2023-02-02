@@ -1,6 +1,4 @@
-package com.es.phoneshop.model.entity.latestProductQueue;
-
-import com.es.phoneshop.model.entity.product.Product;
+package com.es.phoneshop.model.entity;
 
 import java.util.ArrayDeque;
 import java.util.Queue;

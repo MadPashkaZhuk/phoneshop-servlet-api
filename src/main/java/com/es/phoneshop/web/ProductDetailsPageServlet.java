@@ -2,13 +2,13 @@ package com.es.phoneshop.web;
 
 import com.es.phoneshop.model.dao.impl.ArrayListProductDao;
 import com.es.phoneshop.model.dao.ProductDao;
-import com.es.phoneshop.model.entity.cart.Cart;
-import com.es.phoneshop.model.entity.cart.CartService;
-import com.es.phoneshop.model.entity.cart.DefaultCartService;
+import com.es.phoneshop.model.entity.Cart;
+import com.es.phoneshop.model.service.CartService;
+import com.es.phoneshop.model.service.impl.DefaultCartService;
 
-import com.es.phoneshop.model.entity.latestProductQueue.DefaultLatestProductQueueService;
-import com.es.phoneshop.model.entity.latestProductQueue.LatestProductQueue;
-import com.es.phoneshop.model.entity.latestProductQueue.LatestProductQueueService;
+import com.es.phoneshop.model.service.impl.DefaultLatestProductQueueService;
+import com.es.phoneshop.model.entity.LatestProductQueue;
+import com.es.phoneshop.model.service.LatestProductQueueService;
 import com.es.phoneshop.model.exceptions.OutOfStockException;
 
 import javax.servlet.ServletConfig;
@@ -39,50 +39,65 @@ public class ProductDetailsPageServlet extends HttpServlet {
         request.setAttribute("cart", cartService.getCart(request));
         request.setAttribute("latestProducts", queueService.getLatestProductQueue(request).getQueue());
 
+        String productJSPPath = "/WEB-INF/pages/product.jsp";
         LatestProductQueue queue = queueService.getLatestProductQueue(request);
         queueService.add(queue, parseProductId(request));
-        request.getRequestDispatcher("/WEB-INF/pages/product.jsp").forward(request, response);
+        request.getRequestDispatcher(productJSPPath).forward(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String quantity = request.getParameter("quantity");
+
+        String wrongQuantityExceptionMessage = "Quantity is not a number";
+        String negativeQuantityExceptionMessage = "Quantity is negative";
+        String zeroQuantityExceptionMessage = "Quantity is zero";
+        String errorAttribute = "error";
+        String messageAttribute = "message";
+
         Long id = parseProductId(request);
         int parsedQuantity = 0;
         try {
             NumberFormat format = NumberFormat.getInstance(request.getLocale());
             parsedQuantity = format.parse(quantity).intValue();
+            if(!Integer.valueOf(parsedQuantity).toString().equals(quantity)) {
+                throw new ParseException(wrongQuantityExceptionMessage, 0);
+            }
         }
         catch (ParseException exception) {
-            request.setAttribute("error", "Quantity is not a number");
+            request.setAttribute(errorAttribute, wrongQuantityExceptionMessage);
             doGet(request, response);
             return;
         }
 
         if(parsedQuantity < 0) {
-            request.setAttribute("error", "Quantity is negative");
+            request.setAttribute(errorAttribute, negativeQuantityExceptionMessage);
             doGet(request, response);
             return;
         }
 
         if(parsedQuantity == 0) {
-            request.setAttribute("error", "Quantity is zero");
+            request.setAttribute(errorAttribute, zeroQuantityExceptionMessage);
             doGet(request, response);
             return;
         }
 
         Cart cart = cartService.getCart(request);
+        String outOfStockMessage = "Out of stock, available: ";
+        String successfulAddingMessage = "Product added to cart";
+        String redirectPath = request.getContextPath() + "/products/" + id + "?message=Product added to cart";
+
         try {
-            cartService.add(cart, id, parsedQuantity);
+            cartService.addProduct(cart, id, parsedQuantity);
         }
         catch (OutOfStockException exception) {
-            request.setAttribute("error", "Out of stock, available: " + exception.getStockAvailable());
+            request.setAttribute(errorAttribute, outOfStockMessage + exception.getStockAvailable());
             doGet(request, response);
             return;
         }
-        request.setAttribute("message", "Product added to cart");
+        request.setAttribute(messageAttribute, successfulAddingMessage);
 
-        response.sendRedirect(request.getContextPath() + "/products/" + id + "?message=Product added to cart");
+        response.sendRedirect(redirectPath);
     }
 
     private Long parseProductId(HttpServletRequest request) {

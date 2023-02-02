@@ -1,4 +1,4 @@
-package com.es.phoneshop.model.entity.cart;
+package com.es.phoneshop.model.entity;
 
 import java.util.ArrayList;
 import java.util.List;

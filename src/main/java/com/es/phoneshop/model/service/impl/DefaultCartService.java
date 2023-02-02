@@ -1,13 +1,17 @@
-package com.es.phoneshop.model.entity.cart;
+package com.es.phoneshop.model.service.impl;
 
 import com.es.phoneshop.model.dao.ProductDao;
 import com.es.phoneshop.model.dao.impl.ArrayListProductDao;
-import com.es.phoneshop.model.entity.product.Product;
+import com.es.phoneshop.model.entity.Cart;
+import com.es.phoneshop.model.entity.CartItem;
+import com.es.phoneshop.model.entity.Product;
 import com.es.phoneshop.model.exceptions.OutOfStockException;
+import com.es.phoneshop.model.service.CartService;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Optional;
 
-public class DefaultCartService implements CartService{
+public class DefaultCartService implements CartService {
     private static final String CART_SESSION_ATTRIBUTE = DefaultCartService.class.getName() + ".cart";
     private ProductDao productDao;
     private static class SingletonHelper {
@@ -34,22 +38,30 @@ public class DefaultCartService implements CartService{
     }
 
     @Override
-    public synchronized void add(Cart cart, Long productId, int quantity) throws OutOfStockException {
+    public synchronized void addProduct(Cart cart, Long productId, int quantity) throws OutOfStockException {
         Product product = productDao.getProduct(productId);
-        if (product.getStock() < quantity) {
-            throw new OutOfStockException(product, quantity, product.getStock());
-        }
         CartItem newCartItem = new CartItem(product, quantity);
-        if (!cart.getItems().contains(newCartItem)) {
+        Optional<CartItem> optionalCartItem = getCartItemByProduct(cart, product);
+
+        if (!optionalCartItem.isPresent()) {
+            if (product.getStock() < quantity) {
+                throw new OutOfStockException(product, quantity, product.getStock());
+            }
             cart.getItems().add(newCartItem);
             return;
         }
-        CartItem oldCartItem = cart.getItems().stream()
-                .filter(cartItem -> cartItem.equals(newCartItem))
-                .findAny().get(); // always present
+        CartItem oldCartItem = optionalCartItem.get();
         if(oldCartItem.getQuantity() + quantity > product.getStock()) {
             throw new OutOfStockException(product, quantity, product.getStock() - oldCartItem.getQuantity());
         }
-        oldCartItem.addToQuantity(newCartItem.getQuantity());
+        oldCartItem.setQuantity(oldCartItem.getQuantity() + newCartItem.getQuantity());
     }
+
+    private Optional<CartItem> getCartItemByProduct(Cart cart, Product product) {
+        return cart.getItems().stream()
+                .filter(curProduct -> curProduct.getProduct().equals(product))
+                .findAny();
+    }
+
+
 }

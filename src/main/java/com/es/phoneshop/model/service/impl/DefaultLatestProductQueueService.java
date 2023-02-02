@@ -1,8 +1,10 @@
-package com.es.phoneshop.model.entity.latestProductQueue;
+package com.es.phoneshop.model.service.impl;
 
 import com.es.phoneshop.model.dao.ProductDao;
 import com.es.phoneshop.model.dao.impl.ArrayListProductDao;
-import com.es.phoneshop.model.entity.product.Product;
+import com.es.phoneshop.model.entity.LatestProductQueue;
+import com.es.phoneshop.model.entity.Product;
+import com.es.phoneshop.model.service.LatestProductQueueService;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -35,9 +37,7 @@ public class DefaultLatestProductQueueService implements LatestProductQueueServi
     @Override
     public synchronized void add(LatestProductQueue queue, Long productId) {
         Product product = productDao.getProduct(productId);
-        if(queue.getQueue().contains(product)) {
-            return;
-        }
+        queue.getQueue().remove(product);
         if (queue.getQueue().size() == 3) {
             queue.getQueue().remove();
         }

@@ -1,4 +1,4 @@
-package com.es.phoneshop.model.entity.priceHistory;
+package com.es.phoneshop.model.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

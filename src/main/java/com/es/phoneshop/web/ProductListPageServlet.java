@@ -2,8 +2,8 @@ package com.es.phoneshop.web;
 
 import com.es.phoneshop.model.dao.impl.ArrayListProductDao;
 import com.es.phoneshop.model.dao.ProductDao;
-import com.es.phoneshop.model.entity.latestProductQueue.DefaultLatestProductQueueService;
-import com.es.phoneshop.model.entity.latestProductQueue.LatestProductQueueService;
+import com.es.phoneshop.model.service.impl.DefaultLatestProductQueueService;
+import com.es.phoneshop.model.service.LatestProductQueueService;
 import com.es.phoneshop.model.entity.sortParams.SortField;
 import com.es.phoneshop.model.entity.sortParams.SortOrder;
 
@@ -30,12 +30,15 @@ public class ProductListPageServlet extends HttpServlet {
         String query = request.getParameter("query");
         String sortField = request.getParameter("sort");
         String sortOrder = request.getParameter("order");
-        request.setAttribute("products", productDao.findProducts(query,
+        String latestProductsAttribute = "latestProducts";
+        String productListJSPPath = "/WEB-INF/pages/productList.jsp";
+        String productsAttribute = "products";
+        request.setAttribute(productsAttribute, productDao.findProducts(query,
                 Optional.ofNullable(sortField).map(field -> SortField.valueOf(field.toUpperCase())).orElse(null),
                 Optional.ofNullable(sortOrder).map(order -> SortOrder.valueOf(order.toUpperCase())).orElse(null)));
 
-        request.setAttribute("latestProducts", queueService.getLatestProductQueue(request).getQueue());
+        request.setAttribute(latestProductsAttribute, queueService.getLatestProductQueue(request).getQueue());
 
-        request.getRequestDispatcher("/WEB-INF/pages/productList.jsp").forward(request, response);
+        request.getRequestDispatcher(productListJSPPath).forward(request, response);
     }
 }

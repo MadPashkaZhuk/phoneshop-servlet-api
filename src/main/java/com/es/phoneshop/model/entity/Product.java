@@ -1,9 +1,6 @@
-package com.es.phoneshop.model.entity.product;
-
-import com.es.phoneshop.model.entity.priceHistory.PriceHistory;
+package com.es.phoneshop.model.entity;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.*;
 
 public class Product {

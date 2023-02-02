@@ -1,8 +1,8 @@
 package com.es.phoneshop.model.exceptions;
 
-import com.es.phoneshop.model.entity.product.Product;
+import com.es.phoneshop.model.entity.Product;
 
-public class OutOfStockException extends Exception{
+public class OutOfStockException extends Exception {
     private Product product;
     private int stockRequested;
     private int stockAvailable;

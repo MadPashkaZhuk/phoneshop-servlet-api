@@ -1,11 +1,11 @@
 package com.es.phoneshop.model.dao.impl;
 
 import com.es.phoneshop.model.dao.ProductDao;
-import com.es.phoneshop.model.entity.latestProductQueue.LatestProductQueue;
+import com.es.phoneshop.model.entity.LatestProductQueue;
 import com.es.phoneshop.model.entity.sortParams.SortField;
 import com.es.phoneshop.model.entity.sortParams.SortOrder;
 import com.es.phoneshop.model.exceptions.ProductNotFoundException;
-import com.es.phoneshop.model.entity.product.Product;
+import com.es.phoneshop.model.entity.Product;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -78,9 +78,7 @@ public class ArrayListProductDao implements ProductDao {
         for(String word : words) {
             products.stream()
                     .filter((product -> product.getDescription().contains(word)))
-                    .forEach((product) -> {
-                        frequencyOfProducts.compute(product, (k, v) -> v == null ? 1 : v + 1);
-                    });
+                    .forEach((product) -> frequencyOfProducts.compute(product, (k, v) -> v == null ? 1 : v + 1));
         }
 
         Map<Integer, List<Product>> sortedFrequency = new TreeMap<>();
@@ -92,9 +90,7 @@ public class ArrayListProductDao implements ProductDao {
         });
         List<Product> sortedProducts = new ArrayList<>();
 
-        sortedFrequency.forEach((k,v)->{
-            sortedProducts.addAll(v);
-        });
+        sortedFrequency.forEach((k,v)-> sortedProducts.addAll(v));
         Collections.reverse(sortedProducts);
         return sortedProducts;
     }

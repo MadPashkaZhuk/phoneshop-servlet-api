@@ -1,4 +1,6 @@
-package com.es.phoneshop.model.entity.latestProductQueue;
+package com.es.phoneshop.model.service;
+
+import com.es.phoneshop.model.entity.LatestProductQueue;
 
 import javax.servlet.http.HttpServletRequest;
 
