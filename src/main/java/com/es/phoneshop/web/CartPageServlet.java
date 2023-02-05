@@ -7,7 +7,6 @@ import com.es.phoneshop.model.service.CartService;
 import com.es.phoneshop.model.service.impl.DefaultCartService;
 
 import com.es.phoneshop.model.service.impl.DefaultLatestProductQueueService;
-import com.es.phoneshop.model.entity.LatestProductQueue;
 import com.es.phoneshop.model.service.LatestProductQueueService;
 import com.es.phoneshop.model.exceptions.OutOfStockException;
 
@@ -19,14 +18,16 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.HashMap;
+import java.util.Map;
 
 
-public class ProductDetailsPageServlet extends HttpServlet {
+public class CartPageServlet extends HttpServlet {
     private ProductDao productDao;
     private CartService cartService;
     private LatestProductQueueService queueService;
 
-    private static final String PRODUCT_JSP = "/WEB-INF/pages/product.jsp";
+    private static final String CART_JSP = "/WEB-INF/pages/cart.jsp";
     private static final String outOfStockMessage = "Out of stock, available: ";
     private static final String successfulAddingMessage = "Product added to cart";
     private static final String wrongQuantityExceptionMessage = "Quantity is not a number";
@@ -43,56 +44,52 @@ public class ProductDetailsPageServlet extends HttpServlet {
     }
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setAttribute("product", productDao.getProduct(parseProductId(request)));
         request.setAttribute("cart", cartService.getCart(request));
-        request.setAttribute("latestProducts", queueService.getLatestProductQueue(request).getQueue());
-
-        LatestProductQueue queue = queueService.getLatestProductQueue(request);
-        queueService.add(queue, parseProductId(request));
-        request.getRequestDispatcher(PRODUCT_JSP).forward(request, response);
+        request.getRequestDispatcher(CART_JSP).forward(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String quantity = request.getParameter("quantity");
-        Long id = parseProductId(request);
-        int parsedQuantity = 0;
-        try {
-            parsedQuantity = parseQuantity(quantity, request);
-        }
-        catch (ParseException exception) {
-            handleError(request, response, exception);
-            return;
+        String[] productIds = request.getParameterValues("productId");
+        String[] quantities = request.getParameterValues("quantity");
+
+        Map<Long, String> errors = new HashMap<>();
+        for (int i = 0; i < productIds.length; i++) {
+            Long productId = Long.valueOf(productIds[i]);
+
+            int parsedQuantity = 0;
+            try {
+                parsedQuantity = parseQuantity(quantities[i], request);
+                cartService.update(cartService.getCart(request), productId, parsedQuantity);
+            }
+            catch (ParseException | OutOfStockException exception) {
+                handleError(errors, productId, exception);
+            }
         }
 
-        Cart cart = cartService.getCart(request);
-        String redirectPath = request.getContextPath() + "/products/" + id + "?message=Product added to cart";
-
-        try {
-            cartService.addProduct(cart, id, parsedQuantity);
+        if(errors.isEmpty()) {
+            String redirectPath = request.getContextPath() + "/cart?message=Cart updated successfully";
+            response.sendRedirect(redirectPath);
         }
-        catch (OutOfStockException exception) {
-            handleError(request, response, exception);
-            return;
+        else {
+            request.setAttribute("errors", errors);
+            doGet(request, response);
         }
-        request.setAttribute(messageAttribute, successfulAddingMessage);
 
-        response.sendRedirect(redirectPath);
     }
 
-    private void handleError(HttpServletRequest request, HttpServletResponse response, Exception e) throws ServletException, IOException {
+    private void handleError(Map<Long, String> errors, Long productId, Exception e) {
         if(e.getClass().equals(ParseException.class)) {
-            request.setAttribute(errorAttribute, wrongQuantityExceptionMessage);
+            errors.put(productId, wrongQuantityExceptionMessage);
         }
         else {
             if(((OutOfStockException) e).getStockRequested() <= 0) {
-                request.setAttribute(errorAttribute, negativeOrZeroQuantityExceptionMessage);
+                errors.put(productId, negativeOrZeroQuantityExceptionMessage);
             }
             else {
-                request.setAttribute(errorAttribute, outOfStockMessage + ((OutOfStockException) e).getStockAvailable());
+                errors.put(productId, outOfStockMessage + ((OutOfStockException) e).getStockAvailable());
             }
         }
-        doGet(request, response);
     }
 
     private Long parseProductId(HttpServletRequest request) {

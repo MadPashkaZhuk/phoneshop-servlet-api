@@ -33,12 +33,21 @@
   </servlet-mapping>
 
   <servlet>
-    <servlet-name>ProductPriceHistory</servlet-name>
+    <servlet-name>productPriceHistory</servlet-name>
     <servlet-class>com.es.phoneshop.web.ProductPriceHistoryServlet</servlet-class>
   </servlet>
   <servlet-mapping>
-    <servlet-name>ProductPriceHistory</servlet-name>
+    <servlet-name>productPriceHistory</servlet-name>
     <url-pattern>/products/pricehistory/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>cart</servlet-name>
+    <servlet-class>com.es.phoneshop.web.CartPageServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>cart</servlet-name>
+    <url-pattern>/cart</url-pattern>
   </servlet-mapping>
 
   <error-page>
