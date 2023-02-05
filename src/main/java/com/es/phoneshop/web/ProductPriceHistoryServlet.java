@@ -13,6 +13,9 @@ import java.io.IOException;
 
 public class ProductPriceHistoryServlet extends HttpServlet {
     private ProductDao productDao;
+    private static final String productAttribute = "product";
+    private static final String PRODUCT_PRICE_HISTORY_JSP = "/WEB-INF/pages/productPriceHistory.jsp";
+
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -22,11 +25,8 @@ public class ProductPriceHistoryServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String productId = request.getPathInfo();
-        String productAttribute = "product";
-        String productPriceHistoryJSPPath = "/WEB-INF/pages/productPriceHistory.jsp";
 
-
-        request.setAttribute("product", productDao.getProduct(Long.valueOf(productId.substring(1))));
-        request.getRequestDispatcher(productPriceHistoryJSPPath).forward(request, response);
+        request.setAttribute(productAttribute, productDao.getProduct(Long.valueOf(productId.substring(1))));
+        request.getRequestDispatcher(PRODUCT_PRICE_HISTORY_JSP).forward(request, response);
     }
 }

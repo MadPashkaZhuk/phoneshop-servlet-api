@@ -19,6 +19,9 @@ import java.util.Optional;
 public class ProductListPageServlet extends HttpServlet {
     private ProductDao productDao;
     private LatestProductQueueService queueService;
+    private static final String latestProductsAttribute = "latestProducts";
+    private static final String PRODUCT_LIST_JSP = "/WEB-INF/pages/productList.jsp";
+    private static final String productsAttribute = "products";
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
@@ -30,15 +33,13 @@ public class ProductListPageServlet extends HttpServlet {
         String query = request.getParameter("query");
         String sortField = request.getParameter("sort");
         String sortOrder = request.getParameter("order");
-        String latestProductsAttribute = "latestProducts";
-        String productListJSPPath = "/WEB-INF/pages/productList.jsp";
-        String productsAttribute = "products";
+
         request.setAttribute(productsAttribute, productDao.findProducts(query,
                 Optional.ofNullable(sortField).map(field -> SortField.valueOf(field.toUpperCase())).orElse(null),
                 Optional.ofNullable(sortOrder).map(order -> SortOrder.valueOf(order.toUpperCase())).orElse(null)));
 
         request.setAttribute(latestProductsAttribute, queueService.getLatestProductQueue(request).getQueue());
 
-        request.getRequestDispatcher(productListJSPPath).forward(request, response);
+        request.getRequestDispatcher(PRODUCT_LIST_JSP).forward(request, response);
     }
 }
